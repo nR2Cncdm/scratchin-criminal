@@ -1,6 +1,3 @@
-# Copyright (c) 2009 Bitcoin Company
-# Author: Satoshi Nakamoto
-#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -19,7 +16,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-# This example is for use on (Linux) computers that are using CPython with
+# This example is for use on Raspberry Pi computers that are using CPython with
 # Adafruit Blinka to support CircuitPython libraries. CircuitPython does
 # not support PIL/pillow (python imaging library)!
 
@@ -168,19 +165,6 @@ while True:
     # draw.text((20, 180), "Hello World", font=fnt, fill=rcolor)
     # rcolor = tuple([int(x * 255) for x in hsv_to_rgb(random.random(), 1, 1)])
     # draw.text((20, 210), "Hello World", font=fnt, fill=rcolor)
-
-    # Shell scripts for system monitoring from here:
-    # https://unix.stackexchange.com/questions/119126/command-to-display-memory-usage-disk-usage-and-cpu-load
-    # cmd = "hostname -I | cut -d' ' -f1"
-    # IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
-    # cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
-    # CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    # cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%s MB  %.2f%%\", $3,$2,$3*100/$2 }'"
-    # MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    # cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
-    # Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    # cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
-    # Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
 
     # Write four lines of text.
     y = top
