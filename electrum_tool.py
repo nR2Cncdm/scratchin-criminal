@@ -97,11 +97,11 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
 draw = ImageDraw.Draw(image)
 
 # Clear display.
-draw.rectangle((0, 0, width, height), outline=0, fill=(255, 0, 0))
-disp.image(image)
+# draw.rectangle((0, 0, width, height), outline=0, fill=(255, 0, 0))
+# disp.image(image)
 
 # Get drawing object to draw on image.
-draw = ImageDraw.Draw(image)
+# draw = ImageDraw.Draw(image)
 
 # Draw a black filled box to clear the image.
 draw.rectangle((0, 0, width, height), outline=0, fill=0)
