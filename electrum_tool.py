@@ -27,7 +27,7 @@ from digitalio import DigitalInOut, Direction
 from PIL import Image, ImageDraw, ImageFont
 import pyqrcode
 testaddress = pyqrcode.create("bitcoin:bc1qzcfgfef7xvdh7eursdf2rfkv52yas4snzsnkeq")
-testaddress.svg("myqr.svg", scale=5, background='#eee', quiet_zone=0)
+testaddress.png("myqr.png", scale=5, background='#eee', quiet_zone=0)
 import adafruit_rgb_display.st7789 as st7789
 # import adafruit_rgb_display.ili9341 as ili9341
 # import adafruit_rgb_display.hx8357 as hx8357
@@ -152,7 +152,7 @@ while True:
 
     if not button_C.value:  # center pressed
         #Show QR Code for Test Address
-        image = Image.open("myqr.svg")
+        image = Image.open("myqr.png")
         # Scale the image to the smaller screen dimension
         image_ratio = image.width / image.height
         screen_ratio = width / height
