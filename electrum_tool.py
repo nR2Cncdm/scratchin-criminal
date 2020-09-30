@@ -21,26 +21,48 @@
 # not support PIL/pillow (python imaging library)!
 
 import time
-# import random
-from colorsys import hsv_to_rgb
 import subprocess
 import board
 from digitalio import DigitalInOut, Direction
 from PIL import Image, ImageDraw, ImageFont
+import pyqrcode
+testaddress = pyqrcode.create("bitcoin:bc1qzcfgfef7xvdh7eursdf2rfkv52yas4snzsnkeq")
+testaddress.svg("myqr.svg", scale=5, background='#eee', quiet_zone=0)
 import adafruit_rgb_display.st7789 as st7789
+# import adafruit_rgb_display.ili9341 as ili9341
+# import adafruit_rgb_display.hx8357 as hx8357
+# import adafruit_rgb_display.st7735 as st7735
+# import adafruit_rgb_display.ssd1351 as ssd1351
+# import adafruit_rgb_display.ssd1331 as ssd1331
 
-# Create the display
-cs_pin = DigitalInOut(board.CE0)
-dc_pin = DigitalInOut(board.D25)
-reset_pin = DigitalInOut(board.D24)
+
+# Configuration for CS and DC pins (these are PiTFT defaults):
+cs_pin = digitalio.DigitalInOut(board.CE0)
+dc_pin = digitalio.DigitalInOut(board.D25)
+reset_pin = digitalio.DigitalInOut(board.D24)
+ 
+# Config for display baudrate (default max is 24mhz):
 BAUDRATE = 24000000
 
+# Setup SPI bus using hardware SPI:
 spi = board.SPI()
+
+# Create the display:
+# disp = st7789.ST7789(spi, rotation=90,                            # 2.0" ST7789
+# disp = st7789.ST7789(spi, rotation=90, width=135, height=240, x_offset=53, y_offset=40, # 1.14" ST7789
+# disp = hx8357.HX8357(spi, rotation=180,                           # 3.5" HX8357
+# disp = st7735.ST7735R(spi, rotation=90,                           # 1.8" ST7735R
+# disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,   # 1.44" ST7735R
+# disp = st7735.ST7735R(spi, rotation=90, bgr=True,                 # 0.96" MiniTFT ST7735R
+# disp = ssd1351.SSD1351(spi, rotation=180,                         # 1.5" SSD1351
+# disp = ssd1351.SSD1351(spi, height=96, y_offset=32, rotation=180, # 1.27" SSD1351
+# disp = ssd1331.SSD1331(spi, rotation=180,                         # 0.96" SSD1331
+# disp = ili9341.ILI9341(spi, rotation=90,                          # 2.2", 2.4", 2.8", 3.2" ILI9341
 disp = st7789.ST7789(
     spi,
     height=240,
     y_offset=80,
-    rotation=180,
+    rotation=180,                                                   # 1.3", 1.54" ST7789
     cs=cs_pin,
     dc=dc_pin,
     rst=reset_pin,
@@ -75,19 +97,15 @@ backlight.switch_to_output()
 backlight.value = True
 
 # Create blank image for drawing.
-# Make sure to create image with mode 'RGB' for color.
-width = disp.width
-height = disp.height
+# Make sure to create image with mode 'RGB' for full color.
+if disp.rotation % 180 == 90:
+    height = disp.width  # we swap height/width to rotate it to landscape!
+    width = disp.height
+else:
+    width = disp.width  # we swap height/width to rotate it to landscape!
+    height = disp.height
 image = Image.new("RGB", (width, height))
-
-# First define some constants to allow easy resizing of shapes.
-padding = 122
-top = padding
-bottom = height - padding
-
-# Move left to right keeping track of the current x position for drawing shapes.
-x = 10
-
+ 
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the
 # same directory as the python script!
 # Some other nice fonts to try: http://www.dafont.com/bitmap.php
@@ -95,16 +113,6 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
 
 # Get drawing object to draw on image.
 draw = ImageDraw.Draw(image)
-
-# Clear display.
-# draw.rectangle((0, 0, width, height), outline=0, fill=(255, 0, 0))
-# disp.image(image)
-
-# Get drawing object to draw on image.
-# draw = ImageDraw.Draw(image)
-
-# Draw a black filled box to clear the image.
-draw.rectangle((0, 0, width, height), outline=0, fill=0)
 
 udlr_fill = "#00FF00"
 udlr_outline = "#00FFFF"
@@ -116,13 +124,13 @@ fnt = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
 while True:
 
     # Draw a black filled box to clear the image.
-    draw.rectangle((0, 0, width, height), outline=0, fill=0)
+    draw.rectangle((0, 0, width, height), outline=0, fill=(0,0,0))
 
     if not button_U.value:  # up pressed
-        cmd = "hostname -I | cut -d' ' -f1"
-        IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
+        cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
+        Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
     else:
-        IP = "" # up
+        Temp = ""  # center
 
     if not button_D.value:  # down pressed
         cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
@@ -143,10 +151,23 @@ while True:
         Disk = ""  # right
 
     if not button_C.value:  # center pressed
-        cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
-        Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    else:
-        Temp = ""  # center
+		#Show QR Code for Test Address
+		image = Image.open("myqr.svg")
+		# Scale the image to the smaller screen dimension
+		image_ratio = image.width / image.height
+		screen_ratio = width / height
+		if screen_ratio < image_ratio:
+			scaled_width = image.width * height // image.height
+			scaled_height = height
+		else:
+			scaled_width = width
+			scaled_height = image.height * width // image.width
+		image = image.resize((scaled_width, scaled_height), Image.BICUBIC)
+		
+		# Crop and center the image
+		x = scaled_width // 2 - width // 2
+		y = scaled_height // 2 - height // 2
+		image = image.crop((x, y, x + width, y + height))
 
     A_fill = 0
     if not button_A.value:  # left pressed
@@ -158,16 +179,12 @@ while True:
         B_fill = button_fill
     draw.ellipse((190, 40, 230, 80), outline=button_outline, fill=B_fill)  # B button
 
-    # make a random color and print text
-    # rcolor = tuple([int(x * 255) for x in hsv_to_rgb(random.random(), 1, 1)])
-    # draw.text((20, 150), "Hello World", font=fnt, fill=rcolor)
-    # rcolor = tuple([int(x * 255) for x in hsv_to_rgb(random.random(), 1, 1)])
-    # draw.text((20, 180), "Hello World", font=fnt, fill=rcolor)
-    # rcolor = tuple([int(x * 255) for x in hsv_to_rgb(random.random(), 1, 1)])
-    # draw.text((20, 210), "Hello World", font=fnt, fill=rcolor)
-
-    # Write four lines of text.
-    y = top
+    # Write four lines of text starting at x,y
+	x = 10
+    y = 122
+    # Display IP Address
+    cmd = "hostname -I | cut -d' ' -f1"
+    IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
     draw.text((x, y), IP, font=font, fill="#FFFFFF")
     y += font.getsize(IP)[1]
     draw.text((x, y), CPU, font=font, fill="#FFFF00")
