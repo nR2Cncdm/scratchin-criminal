@@ -151,23 +151,23 @@ while True:
         Disk = ""  # right
 
     if not button_C.value:  # center pressed
-		#Show QR Code for Test Address
-		image = Image.open("myqr.svg")
-		# Scale the image to the smaller screen dimension
-		image_ratio = image.width / image.height
-		screen_ratio = width / height
-		if screen_ratio < image_ratio:
-			scaled_width = image.width * height // image.height
-			scaled_height = height
-		else:
-			scaled_width = width
-			scaled_height = image.height * width // image.width
-		image = image.resize((scaled_width, scaled_height), Image.BICUBIC)
-		
-		# Crop and center the image
-		x = scaled_width // 2 - width // 2
-		y = scaled_height // 2 - height // 2
-		image = image.crop((x, y, x + width, y + height))
+        #Show QR Code for Test Address
+        image = Image.open("myqr.svg")
+        # Scale the image to the smaller screen dimension
+        image_ratio = image.width / image.height
+        screen_ratio = width / height
+        if screen_ratio < image_ratio:
+            scaled_width = image.width * height // image.height
+            scaled_height = height
+        else:
+            scaled_width = width
+            scaled_height = image.height * width // image.width
+        image = image.resize((scaled_width, scaled_height), Image.BICUBIC)
+
+        # Crop and center the image
+        x = scaled_width // 2 - width // 2
+        y = scaled_height // 2 - height // 2
+        image = image.crop((x, y, x + width, y + height))
 
     A_fill = 0
     if not button_A.value:  # left pressed
@@ -180,7 +180,7 @@ while True:
     draw.ellipse((190, 40, 230, 80), outline=button_outline, fill=B_fill)  # B button
 
     # Write four lines of text starting at x,y
-	x = 10
+    x = 10
     y = 122
     # Display IP Address
     cmd = "hostname -I | cut -d' ' -f1"
