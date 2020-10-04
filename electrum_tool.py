@@ -154,7 +154,7 @@ while True:
         #Show QR Code for Test Address
         image = canvas
     else:
-		image = Image.new("RGB", (width, height))  
+		image = Image.new("RGB", (width, height))
 
     A_fill = 0
     if not button_A.value:  # left pressed
