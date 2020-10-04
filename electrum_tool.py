@@ -25,7 +25,8 @@ import subprocess
 import board
 from digitalio import DigitalInOut, Direction
 from PIL import Image, ImageDraw, ImageFont
-import qrcode
+import pyqrcode
+import png
 import adafruit_rgb_display.st7789 as st7789
 # import adafruit_rgb_display.ili9341 as ili9341
 # import adafruit_rgb_display.hx8357 as hx8357
@@ -107,17 +108,11 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
 # Get drawing object to draw on image.
 draw = ImageDraw.Draw(image)
 
-qr = qrcode.QRCode(
-    version = 1,
-    error_correction = qrcode.constants.ERROR_CORRECT_H,
-    box_size = 10,
-    border = 4,
-)
-data = "bitcoin:bc1qzcfgfef7xvdh7eursdf2rfkv52yas4snzsnkeq"
-qr.add_data(data)
-qr.make(fit=True)
-img = qr.make_image()
-img.save("myqr.jpg")
+qr = pyqrcode.create("bitcoin:bc1qzcfgfef7xvdh7eursdf2rfkv52yas4snzsnkeq")
+qr.png("myqr.png", scale=5)
+source = Image.open("myqr.png")
+canvas = Image.new('RGB', (height,width), (255, 255, 255))
+canvas.paste(source, (0, 0))
 
 udlr_fill = "#00FF00"
 udlr_outline = "#00FFFF"
@@ -157,22 +152,23 @@ while True:
 
     if not button_C.value:  # center pressed
         #Show QR Code for Test Address
-        image = Image.open('myqr.jpg')
-        # Scale the image to the smaller screen dimension
-        image_ratio = image.width / image.height
-        screen_ratio = width / height
-        if screen_ratio < image_ratio:
-            scaled_width = image.width * height // image.height
-            scaled_height = height
-        else:
-            scaled_width = width
-            scaled_height = image.height * width // image.width
-        image = image.resize((scaled_width, scaled_height), Image.BICUBIC)
+        canvas.show()
+        # image = Image.open('myqr.jpg')
+        # # Scale the image to the smaller screen dimension
+        # image_ratio = image.width / image.height
+        # screen_ratio = width / height
+        # if screen_ratio < image_ratio:
+            # scaled_width = image.width * height // image.height
+            # scaled_height = height
+        # else:
+            # scaled_width = width
+            # scaled_height = image.height * width // image.width
+        # image = image.resize((scaled_width, scaled_height), Image.BICUBIC)
 
-        # Crop and center the image
-        x = scaled_width // 2 - width // 2
-        y = scaled_height // 2 - height // 2
-        image = image.crop((x, y, x + width, y + height))
+        # # Crop and center the image
+        # x = scaled_width // 2 - width // 2
+        # y = scaled_height // 2 - height // 2
+        # image = image.crop((x, y, x + width, y + height))
 
     A_fill = 0
     if not button_A.value:  # left pressed
