@@ -25,8 +25,7 @@ import subprocess
 import board
 from digitalio import DigitalInOut, Direction
 from PIL import Image, ImageDraw, ImageFont
-import pyqrcode
-import png
+import qrcode
 import adafruit_rgb_display.st7789 as st7789
 # import adafruit_rgb_display.ili9341 as ili9341
 # import adafruit_rgb_display.hx8357 as hx8357
@@ -108,8 +107,18 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
 # Get drawing object to draw on image.
 draw = ImageDraw.Draw(image)
 
-testaddress = pyqrcode.create("bitcoin:bc1qzcfgfef7xvdh7eursdf2rfkv52yas4snzsnkeq")
-testaddress.png('myqr.png', scale=5, module_color=[0,0,0,128],quiet_zone=4)
+qr = qrcode.QRCode(
+    version = 1,
+    error_correction = qrcode.constants.ERROR_CORRECT_H,
+    box_size = 10,
+    border = 4,
+)
+data = "bitcoin:bc1qzcfgfef7xvdh7eursdf2rfkv52yas4snzsnkeq"
+qr.add_data(data)
+qr.make(fit=True)
+img = qr.make_image()
+img.save("myqr.jpg")
+
 udlr_fill = "#00FF00"
 udlr_outline = "#00FFFF"
 button_fill = "#FF00FF"
@@ -148,7 +157,7 @@ while True:
 
     if not button_C.value:  # center pressed
         #Show QR Code for Test Address
-        image = Image.open('myqr.png')
+        image = Image.open('myqr.jpg')
         # Scale the image to the smaller screen dimension
         image_ratio = image.width / image.height
         screen_ratio = width / height
