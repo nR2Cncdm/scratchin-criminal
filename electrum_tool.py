@@ -155,7 +155,7 @@ while True:
         oldimage = image
         image = canvas
     else:
-		image = oldimage
+        image = oldimage
 
     A_fill = 0
     if not button_A.value:  # left pressed
