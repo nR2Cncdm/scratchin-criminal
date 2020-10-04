@@ -99,6 +99,7 @@ else:
     width = disp.width  # we swap height/width to rotate it to landscape!
     height = disp.height
 image = Image.new("RGB", (width, height))
+oldimage = Image.new("RGB", (height,width))
  
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the
 # same directory as the python script!
@@ -152,7 +153,6 @@ while True:
 
     if not button_C.value:  # center pressed
         #Show QR Code for Test Address
-        oldimage = Image.new('RGB', (height,width), (255, 255, 255))
         oldimage.paste(source, (0, 0))
         image = canvas
     else:
