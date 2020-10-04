@@ -152,7 +152,7 @@ while True:
 
     if not button_C.value:  # center pressed
         #Show QR Code for Test Address
-        canvas.show()
+        image = canvas
         # image = Image.open('myqr.jpg')
         # # Scale the image to the smaller screen dimension
         # image_ratio = image.width / image.height
