@@ -112,9 +112,6 @@ draw = ImageDraw.Draw(image)
 
 qr = pyqrcode.create("bitcoin:bc1qzcfgfef7xvdh7eursdf2rfkv52yas4snzsnkeq")
 qr.png("myqr.png", scale=5)
-
-
-oldimage = Image.new("RGB", (height,width))
 source = Image.open("myqr.png")
 canvas = Image.new('RGB', (height,width), (255, 255, 255))
 canvas.paste(source, (0, 0))
@@ -157,7 +154,7 @@ while True:
 
     if not button_C.value:  # center pressed
         #Show QR Code for Test Address
-        disp.image(source)
+        disp.image(canvas)
 
     A_fill = 0
     if not button_A.value:  # left pressed
