@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -98,8 +100,6 @@ if disp.rotation % 180 == 90:
 else:
     width = disp.width  # we swap height/width to rotate it to landscape!
     height = disp.height
-image = Image.new("RGB", (width, height))
-oldimage = Image.new("RGB", (height,width))
  
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the
 # same directory as the python script!
@@ -111,6 +111,9 @@ draw = ImageDraw.Draw(image)
 
 qr = pyqrcode.create("bitcoin:bc1qzcfgfef7xvdh7eursdf2rfkv52yas4snzsnkeq")
 qr.png("myqr.png", scale=5)
+
+image = Image.new("RGB", (width, height))
+oldimage = Image.new("RGB", (height,width))
 source = Image.open("myqr.png")
 canvas = Image.new('RGB', (height,width), (255, 255, 255))
 canvas.paste(source, (0, 0))
@@ -153,7 +156,7 @@ while True:
 
     if not button_C.value:  # center pressed
         #Show QR Code for Test Address
-        oldimage.paste(source, (0, 0))
+        oldimage.paste(image, (0, 0))
         image = canvas
     else:
         image = oldimage
