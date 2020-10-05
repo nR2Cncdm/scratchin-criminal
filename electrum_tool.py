@@ -122,9 +122,10 @@ button_fill = "#FF00FF"
 button_outline = "#FFFFFF"
 
 fnt = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
-# Draw a black filled box to clear the image.
-draw.rectangle((0, 0, width, height), outline=0, fill=(0,0,0))
+
 while True:
+	# Draw a black filled box to clear the image.
+	draw.rectangle((0, 0, width, height), outline=0, fill=(0,0,0))
 
 	if not button_U.value:  # up pressed
 		cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
@@ -150,7 +151,7 @@ while True:
 	else:
 		Disk = ""  # right
 
-	if not button_C.value:  # center pressed
+	while not button_C.value:  # center pressed
 		#Show QR Code for Test Address
 		disp.image(canvas)
 
