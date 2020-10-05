@@ -153,15 +153,15 @@ while True:
 
 	while not button_C.value:  # center pressed
 		#Show QR Code for Test Address
-		disp.image(canvas)
+		disp.image(canvas) #center
 
 	A_fill = 0
-	if not button_A.value:  # left pressed
+	if not button_A.value:  # A button pressed
 		A_fill = button_fill
 	draw.ellipse((140, 80, 180, 120), outline=button_outline, fill=A_fill)  # A button
 
 	B_fill = 0
-	if not button_B.value:  # left pressed
+	if not button_B.value:  # B button pressed
 		B_fill = button_fill
 	draw.ellipse((190, 40, 230, 80), outline=button_outline, fill=B_fill)  # B button
 
@@ -173,12 +173,16 @@ while True:
 	IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
 	draw.text((x, y), IP, font=font, fill="#FFFFFF")
 	y += font.getsize(IP)[1]
+	# Display CPU Load
 	draw.text((x, y), CPU, font=font, fill="#FFFF00")
 	y += font.getsize(CPU)[1]
+	# Display Memory Usage
 	draw.text((x, y), MemUsage, font=font, fill="#00FF00")
 	y += font.getsize(MemUsage)[1]
+	# Display Disk Usage
 	draw.text((x, y), Disk, font=font, fill="#0000FF")
 	y += font.getsize(Disk)[1]
+	# Display System Temp
 	draw.text((x, y), Temp, font=font, fill="#FF00FF")
 
 	# Display the Image
