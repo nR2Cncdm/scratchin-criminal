@@ -107,12 +107,13 @@ else:
 font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
 
 # Get drawing object to draw on image.
+image = Image.new("RGB", (width, height))
 draw = ImageDraw.Draw(image)
 
 qr = pyqrcode.create("bitcoin:bc1qzcfgfef7xvdh7eursdf2rfkv52yas4snzsnkeq")
 qr.png("myqr.png", scale=5)
 
-image = Image.new("RGB", (width, height))
+
 oldimage = Image.new("RGB", (height,width))
 source = Image.open("myqr.png")
 canvas = Image.new('RGB', (height,width), (255, 255, 255))
