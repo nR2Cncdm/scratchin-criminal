@@ -27,8 +27,9 @@ import subprocess
 import board
 from digitalio import DigitalInOut, Direction
 from PIL import Image, ImageDraw, ImageFont
-import pyqrcode
-import png
+# import pyqrcode
+# import png
+import qrcode
 import adafruit_rgb_display.st7789 as st7789
 # import adafruit_rgb_display.ili9341 as ili9341
 # import adafruit_rgb_display.hx8357 as hx8357
@@ -110,14 +111,28 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
 image = Image.new("RGB", (width, height))
 draw = ImageDraw.Draw(image)
 
-qr = pyqrcode.create("testcode")
-qr.png("qr.png", scale=5)
-source = Image.open("qr.png")
-canvas = Image.new('RGB', (height,width), (255, 255, 255))
-canvas.paste(source, (0, 0))
+#QR Code Generation
+qr = qrcode.QRCode(box_size=8)
+qr.add_data('testcode')
+qr.make()
+img_qr = qr.make_image().convert('RGB')
 
-udlr_fill = "#00FF00"
-udlr_outline = "#00FFFF"
+# Scale the image to the smaller screen dimension
+image_ratio = img_qr.width / img_qr.height
+screen_ratio = width / height
+if screen_ratio < image_ratio:
+    scaled_width = img_qr.width * height // img_qr.height
+    scaled_height = height
+else:
+    scaled_width = width
+    scaled_height = img_qr.height * width // img_qr.width
+img_qr = img_qr.resize((scaled_width, scaled_height), Image.BICUBIC)
+
+# Crop and center the image
+x = scaled_width // 2 - width // 2
+y = scaled_height // 2 - height // 2
+img_qr = img_qr.crop((x, y, x + width, y + height))
+
 button_fill = "#FF00FF"
 button_outline = "#FFFFFF"
 
@@ -153,7 +168,7 @@ while True:
 
 	while not button_C.value:  # center pressed
 		#Show QR Code for Test Address
-		disp.image(canvas) #center
+		disp.image(img_qr) #center
 
 	A_fill = 0
 	if not button_A.value:  # A button pressed
