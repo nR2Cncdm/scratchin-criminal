@@ -48,21 +48,21 @@ BAUDRATE = 24000000
 spi = board.SPI()
 
 # Create the display:
-# disp = st7789.ST7789(spi, rotation=90,                            # 2.0" ST7789
+# disp = st7789.ST7789(spi, rotation=90,							# 2.0" ST7789
 # disp = st7789.ST7789(spi, rotation=90, width=135, height=240, x_offset=53, y_offset=40, # 1.14" ST7789
-disp = st7789.ST7789(spi, rotation=180, height=240, y_offset=80,    # 1.3", 1.54" ST7789
-# disp = ili9341.ILI9341(spi, rotation=90,                          # 2.2", 2.4", 2.8", 3.2" ILI9341
-# disp = hx8357.HX8357(spi, rotation=180,                           # 3.5" HX8357
-# disp = st7735.ST7735R(spi, rotation=90,                           # 1.8" ST7735R
+disp = st7789.ST7789(spi, rotation=180, height=240, y_offset=80,	# 1.3", 1.54" ST7789
+# disp = ili9341.ILI9341(spi, rotation=90,						  # 2.2", 2.4", 2.8", 3.2" ILI9341
+# disp = hx8357.HX8357(spi, rotation=180,						   # 3.5" HX8357
+# disp = st7735.ST7735R(spi, rotation=90,						   # 1.8" ST7735R
 # disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,   # 1.44" ST7735R
-# disp = st7735.ST7735R(spi, rotation=90, bgr=True,                 # 0.96" MiniTFT ST7735R
-# disp = ssd1351.SSD1351(spi, rotation=180,                         # 1.5" SSD1351
+# disp = st7735.ST7735R(spi, rotation=90, bgr=True,				 # 0.96" MiniTFT ST7735R
+# disp = ssd1351.SSD1351(spi, rotation=180,						 # 1.5" SSD1351
 # disp = ssd1351.SSD1351(spi, height=96, y_offset=32, rotation=180, # 1.27" SSD1351
-# disp = ssd1331.SSD1331(spi, rotation=180,                         # 0.96" SSD1331
-    cs=cs_pin,
-    dc=dc_pin,
-    rst=reset_pin,
-    baudrate=BAUDRATE,
+# disp = ssd1331.SSD1331(spi, rotation=180,						 # 0.96" SSD1331
+	cs=cs_pin,
+	dc=dc_pin,
+	rst=reset_pin,
+	baudrate=BAUDRATE,
 )
 
 # Input pins:
@@ -95,11 +95,11 @@ backlight.value = True
 # Create blank image for drawing.
 # Make sure to create image with mode 'RGB' for full color.
 if disp.rotation % 180 == 90:
-    height = disp.width  # we swap height/width to rotate it to landscape!
-    width = disp.height
+	height = disp.width  # we swap height/width to rotate it to landscape!
+	width = disp.height
 else:
-    width = disp.width  # we swap height/width to rotate it to landscape!
-    height = disp.height
+	width = disp.width  # we swap height/width to rotate it to landscape!
+	height = disp.height
  
 # Alternatively load a TTF font.  Make sure the .ttf font file is in the
 # same directory as the python script!
@@ -122,67 +122,65 @@ button_fill = "#FF00FF"
 button_outline = "#FFFFFF"
 
 fnt = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
-
+# Draw a black filled box to clear the image.
+draw.rectangle((0, 0, width, height), outline=0, fill=(0,0,0))
 while True:
 
-    # Draw a black filled box to clear the image.
-    draw.rectangle((0, 0, width, height), outline=0, fill=(0,0,0))
+	if not button_U.value:  # up pressed
+		cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
+		Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
+	else:
+		Temp = ""  # up
 
-    if not button_U.value:  # up pressed
-        cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
-        Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    else:
-        Temp = ""  # center
+	if not button_D.value:  # down pressed
+		cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
+		CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
+	else:
+		CPU = ""  # down
 
-    if not button_D.value:  # down pressed
-        cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
-        CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    else:
-        CPU = ""  # down
+	if not button_L.value:  # left pressed
+		cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%s MB  %.2f%%\", $3,$2,$3*100/$2 }'"
+		MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
+	else:
+		MemUsage = ""  # left
 
-    if not button_L.value:  # left pressed
-        cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%s MB  %.2f%%\", $3,$2,$3*100/$2 }'"
-        MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    else:
-        MemUsage = ""  # left
+	if not button_R.value:  # right pressed
+		cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
+		Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
+	else:
+		Disk = ""  # right
 
-    if not button_R.value:  # right pressed
-        cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
-        Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
-    else:
-        Disk = ""  # right
+	if not button_C.value:  # center pressed
+		#Show QR Code for Test Address
+		disp.image(canvas)
 
-    if not button_C.value:  # center pressed
-        #Show QR Code for Test Address
-        disp.image(canvas)
+	A_fill = 0
+	if not button_A.value:  # left pressed
+		A_fill = button_fill
+	draw.ellipse((140, 80, 180, 120), outline=button_outline, fill=A_fill)  # A button
 
-    A_fill = 0
-    if not button_A.value:  # left pressed
-        A_fill = button_fill
-    draw.ellipse((140, 80, 180, 120), outline=button_outline, fill=A_fill)  # A button
+	B_fill = 0
+	if not button_B.value:  # left pressed
+		B_fill = button_fill
+	draw.ellipse((190, 40, 230, 80), outline=button_outline, fill=B_fill)  # B button
 
-    B_fill = 0
-    if not button_B.value:  # left pressed
-        B_fill = button_fill
-    draw.ellipse((190, 40, 230, 80), outline=button_outline, fill=B_fill)  # B button
+	# Write four lines of text starting at x,y
+	x = 10
+	y = 122
+	# Display IP Address
+	cmd = "hostname -I | cut -d' ' -f1"
+	IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
+	draw.text((x, y), IP, font=font, fill="#FFFFFF")
+	y += font.getsize(IP)[1]
+	draw.text((x, y), CPU, font=font, fill="#FFFF00")
+	y += font.getsize(CPU)[1]
+	draw.text((x, y), MemUsage, font=font, fill="#00FF00")
+	y += font.getsize(MemUsage)[1]
+	draw.text((x, y), Disk, font=font, fill="#0000FF")
+	y += font.getsize(Disk)[1]
+	draw.text((x, y), Temp, font=font, fill="#FF00FF")
 
-    # Write four lines of text starting at x,y
-    x = 10
-    y = 122
-    # Display IP Address
-    cmd = "hostname -I | cut -d' ' -f1"
-    IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
-    draw.text((x, y), IP, font=font, fill="#FFFFFF")
-    y += font.getsize(IP)[1]
-    draw.text((x, y), CPU, font=font, fill="#FFFF00")
-    y += font.getsize(CPU)[1]
-    draw.text((x, y), MemUsage, font=font, fill="#00FF00")
-    y += font.getsize(MemUsage)[1]
-    draw.text((x, y), Disk, font=font, fill="#0000FF")
-    y += font.getsize(Disk)[1]
-    draw.text((x, y), Temp, font=font, fill="#FF00FF")
+	# Display the Image
+	disp.image(image)
 
-    # Display the Image
-    disp.image(image)
-
-    time.sleep(0.01)
+	time.sleep(0.01)
