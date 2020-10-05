@@ -110,9 +110,9 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
 image = Image.new("RGB", (width, height))
 draw = ImageDraw.Draw(image)
 
-qr = pyqrcode.create("bitcoin:bc1qzcfgfef7xvdh7eursdf2rfkv52yas4snzsnkeq")
-qr.png("myqr.png", scale=5)
-source = Image.open("myqr.png")
+qr = pyqrcode.create("testcode")
+qr.png("qr.png", scale=5)
+source = Image.open("qr.png")
 canvas = Image.new('RGB', (height,width), (255, 255, 255))
 canvas.paste(source, (0, 0))
 
