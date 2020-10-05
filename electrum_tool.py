@@ -157,10 +157,7 @@ while True:
 
     if not button_C.value:  # center pressed
         #Show QR Code for Test Address
-        oldimage.paste(image, (0, 0))
-        image = canvas
-    else:
-        image = oldimage
+        disp.image(source)
 
     A_fill = 0
     if not button_A.value:  # left pressed
