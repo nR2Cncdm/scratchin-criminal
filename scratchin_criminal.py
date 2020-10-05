@@ -112,7 +112,7 @@ image = Image.new("RGB", (width, height))
 draw = ImageDraw.Draw(image)
 
 #QR Code Generation
-qr = qrcode.QRCode(box_size=8)
+qr = qrcode.QRCode(box_size=10)
 qr.add_data('testcode')
 qr.make()
 img_qr = qr.make_image().convert('RGB')
@@ -175,10 +175,9 @@ while True:
 		A_fill = button_fill
 	draw.ellipse((140, 80, 180, 120), outline=button_outline, fill=A_fill)  # A button
 
-	B_fill = 0
 	if not button_B.value:  # B button pressed
-		B_fill = button_fill
-	draw.ellipse((190, 40, 230, 80), outline=button_outline, fill=B_fill)  # B button
+		backlight.value = False
+		quit() # B button
 
 	# Write four lines of text starting at x,y
 	x = 10
