@@ -92,13 +92,13 @@ backlight.switch_to_output()
 backlight.value = True
 
 # Create RGB blank image for full color drawing.
-image = Image.new("RGB", (width, height))
 if disp.rotation % 180 == 90:
 	height = disp.width  # swap height/width to rotate it to landscape
 	width = disp.height
 else:
 	width = disp.width  # swap height/width to rotate it to landscape
 	height = disp.height
+image = Image.new("RGB", (width, height))
 
 # QR Code Generation
 qr = qrcode.QRCode(
