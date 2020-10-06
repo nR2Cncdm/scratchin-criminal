@@ -141,10 +141,6 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
 # Get drawing object to draw on image.
 draw = ImageDraw.Draw(image)
 
-# Coordinates for text
-x = 10
-y = 10
-
 while True:
 	# Draw a black filled box to clear the screen.
 	draw.rectangle((0, 0, width, height), outline=0, fill=(0,0,0))
@@ -203,6 +199,9 @@ while True:
 	MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
 
 	# Write text starting at x,y
+	x = 10
+	y = 10
+	# Display IP Address
 	draw.text((x, y), IP, font=font, fill="#FFFFFF")
 	y += font.getsize(IP)[1]
 	# Display CPU Load
