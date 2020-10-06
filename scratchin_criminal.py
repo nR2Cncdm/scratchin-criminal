@@ -27,8 +27,6 @@ import subprocess
 import board
 from digitalio import DigitalInOut, Direction
 from PIL import Image, ImageDraw, ImageFont
-# import pyqrcode
-# import png
 import qrcode
 import adafruit_rgb_display.st7789 as st7789
 # import adafruit_rgb_display.ili9341 as ili9341
@@ -93,39 +91,34 @@ backlight = DigitalInOut(board.D26)
 backlight.switch_to_output()
 backlight.value = True
 
-# Create blank image for drawing.
-# Make sure to create image with mode 'RGB' for full color.
+# Create RGB blank image for full color drawing.
+image = Image.new("RGB", (width, height))
 if disp.rotation % 180 == 90:
-	height = disp.width  # we swap height/width to rotate it to landscape!
+	height = disp.width  # swap height/width to rotate it to landscape
 	width = disp.height
 else:
-	width = disp.width  # we swap height/width to rotate it to landscape!
+	width = disp.width  # swap height/width to rotate it to landscape
 	height = disp.height
- 
-# Alternatively load a TTF font.  Make sure the .ttf font file is in the
-# same directory as the python script!
-# Some other nice fonts to try: http://www.dafont.com/bitmap.php
-font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
 
-# Get drawing object to draw on image.
-image = Image.new("RGB", (width, height))
-draw = ImageDraw.Draw(image)
-
-#QR Code Generation
-qr = qrcode.QRCode(box_size=10)
+# QR Code Generation
+qr = qrcode.QRCode(
+	version=1,
+	box_size=10,
+	border=4,
+)
 qr.add_data('testcode')
 qr.make()
 img_qr = qr.make_image().convert('RGB')
 
-# Scale the image to the smaller screen dimension
+# Scale the QR image to screen dimension
 image_ratio = img_qr.width / img_qr.height
 screen_ratio = width / height
 if screen_ratio < image_ratio:
-    scaled_width = img_qr.width * height // img_qr.height
-    scaled_height = height
+	scaled_width = img_qr.width * height // img_qr.height
+	scaled_height = height
 else:
-    scaled_width = width
-    scaled_height = img_qr.height * width // img_qr.width
+	scaled_width = width
+	scaled_height = img_qr.height * width // img_qr.width
 img_qr = img_qr.resize((scaled_width, scaled_height), Image.BICUBIC)
 
 # Crop and center the image
@@ -133,71 +126,99 @@ x = scaled_width // 2 - width // 2
 y = scaled_height // 2 - height // 2
 img_qr = img_qr.crop((x, y, x + width, y + height))
 
-button_fill = "#FF00FF"
-button_outline = "#FFFFFF"
+# IP Address
+cmd = "hostname -I | cut -d' ' -f1"
+IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
 
-fnt = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16)
+# Disk Usage 
+cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
+Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
+
+# Make sure the .ttf font file is in the same directory as script.
+# Some other nice fonts to try: http://www.dafont.com/bitmap.php
+font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
+
+# Get drawing object to draw on image.
+draw = ImageDraw.Draw(image)
+
+# Coordinates for text
+x = 10
+y = 10
 
 while True:
-	# Draw a black filled box to clear the image.
+	# Draw a black filled box to clear the screen.
 	draw.rectangle((0, 0, width, height), outline=0, fill=(0,0,0))
 
-	if not button_U.value:  # up pressed
-		cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
-		Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
-	else:
-		Temp = ""  # up
+	# if not button_U.value:  # up pressed
+		# doSomething()
+	# else:
+		# doSomethingElse() # up
 
-	if not button_D.value:  # down pressed
-		cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
-		CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
-	else:
-		CPU = ""  # down
+	# if not button_D.value:  # down pressed
+		# doSomething()
+	# else:
+		# doSomethingElse() # down
 
-	if not button_L.value:  # left pressed
-		cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%s MB  %.2f%%\", $3,$2,$3*100/$2 }'"
-		MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
-	else:
-		MemUsage = ""  # left
+	# if not button_L.value:  # left pressed
+		# doSomething()
+	# else:
+		# doSomethingElse() # left
 
-	if not button_R.value:  # right pressed
-		cmd = 'df -h | awk \'$NF=="/"{printf "Disk: %d/%d GB  %s", $3,$2,$5}\''
-		Disk = subprocess.check_output(cmd, shell=True).decode("utf-8")
-	else:
-		Disk = ""  # right
+	# if not button_R.value:  # right pressed
+		# doSomething()
+	# else:
+		# doSomethingElse() # right
 
 	while not button_C.value:  # center pressed
-		#Show QR Code for Test Address
-		disp.image(img_qr) #center
+		# Show QR Code for Test Address
+		disp.image(img_qr)  # center
 
+	QuitText = ""
 	A_fill = 0
 	if not button_A.value:  # A button pressed
-		A_fill = button_fill
-	draw.ellipse((140, 80, 180, 120), outline=button_outline, fill=A_fill)  # A button
+		A_fill = "#FF0000"
+		QuitText = "Press A and B together to quit."
+		if not button_B.value:  # B button pressed while A is held
+			backlight.value = False
+			quit()
+	draw.ellipse((140, 190, 180, 230), outline="#FFFFFF", fill=A_fill)  # A button
 
+	B_fill = 0
 	if not button_B.value:  # B button pressed
-		backlight.value = False
-		quit() # B button
+		B_fill = "#FF0000"
+		QuitText = "Press A and B together to quit."
+		if not button_A.value:  # A button pressed while B is held
+			backlight.value = False
+			quit()
+	draw.ellipse((190, 175, 230, 215), outline="#FFFFFF", fill=B_fill)  # B button
 
-	# Write four lines of text starting at x,y
-	x = 10
-	y = 122
-	# Display IP Address
-	cmd = "hostname -I | cut -d' ' -f1"
-	IP = "IP: " + subprocess.check_output(cmd, shell=True).decode("utf-8")
+	# System Temp
+	cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
+	Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
+	# CPU Load
+	cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
+	CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
+	# Memory Usage
+	cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%s MB  %.2f%%\", $3,$2,$3*100/$2 }'"
+	MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
+
+	# Write text starting at x,y
 	draw.text((x, y), IP, font=font, fill="#FFFFFF")
 	y += font.getsize(IP)[1]
 	# Display CPU Load
-	draw.text((x, y), CPU, font=font, fill="#FFFF00")
+	draw.text((x, y), CPU, font=font, fill="#FFFFFF")
 	y += font.getsize(CPU)[1]
 	# Display Memory Usage
-	draw.text((x, y), MemUsage, font=font, fill="#00FF00")
+	draw.text((x, y), MemUsage, font=font, fill="#FFFFFF")
 	y += font.getsize(MemUsage)[1]
 	# Display Disk Usage
-	draw.text((x, y), Disk, font=font, fill="#0000FF")
+	draw.text((x, y), Disk, font=font, fill="#FFFFFF")
 	y += font.getsize(Disk)[1]
 	# Display System Temp
-	draw.text((x, y), Temp, font=font, fill="#FF00FF")
+	draw.text((x, y), Temp, font=font, fill="#FFFFFF")
+	y += font.getsize(Disk)[1]
+	# Display Quit Text
+	draw.text((x, y), QuitText, font=font, fill="#FF0000")
 
 	# Display the Image
 	disp.image(image)
