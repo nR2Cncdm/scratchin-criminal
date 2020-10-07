@@ -47,21 +47,33 @@ BAUDRATE = 24000000
 spi = board.SPI()
 
 # Create the display:
-# disp = st7789.ST7789(spi, rotation=90,							# 2.0" ST7789
-# disp = st7789.ST7789(spi, rotation=90, width=135, height=240, x_offset=53, y_offset=40, # 1.14" ST7789
-disp = st7789.ST7789(spi, rotation=180, height=240, y_offset=80,	# 1.3", 1.54" ST7789
-# disp = ili9341.ILI9341(spi, rotation=90,						  # 2.2", 2.4", 2.8", 3.2" ILI9341
-# disp = hx8357.HX8357(spi, rotation=180,						   # 3.5" HX8357
-# disp = st7735.ST7735R(spi, rotation=90,						   # 1.8" ST7735R
-# disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,   # 1.44" ST7735R
-# disp = st7735.ST7735R(spi, rotation=90, bgr=True,				 # 0.96" MiniTFT ST7735R
-# disp = ssd1351.SSD1351(spi, rotation=180,						 # 1.5" SSD1351
-# disp = ssd1351.SSD1351(spi, height=96, y_offset=32, rotation=180, # 1.27" SSD1351
-# disp = ssd1331.SSD1331(spi, rotation=180,						 # 0.96" SSD1331
-	cs=cs_pin,
-	dc=dc_pin,
-	rst=reset_pin,
-	baudrate=BAUDRATE,
+# 2.0" ST7789
+# disp = st7789.ST7789(spi, rotation=90,
+# 1.14" ST7789
+# disp = st7789.ST7789(spi, rotation=90, width=135, height=240, x_offset=53,
+    # y_offset=40,
+# 2.2", 2.4", 2.8", 3.2" ILI9341
+# disp = ili9341.ILI9341(spi, rotation=90,
+# 3.5" HX8357
+# disp = hx8357.HX8357(spi, rotation=180,
+# 1.8" ST7735R
+# disp = st7735.ST7735R(spi, rotation=90,
+# 1.44" ST7735R
+# disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,
+# 0.96" MiniTFT ST7735R
+# disp = st7735.ST7735R(spi, rotation=90, bgr=True,
+# 1.5" SSD1351
+# disp = ssd1351.SSD1351(spi, rotation=180,
+# 1.27" SSD1351
+# disp = ssd1351.SSD1351(spi, height=96, y_offset=32, rotation=180,
+# 0.96" SSD1331
+# disp = ssd1331.SSD1331(spi, rotation=180,
+# 1.3", 1.54" ST7789
+disp = st7789.ST7789(spi, rotation=180, height=240, y_offset=80,
+    cs=cs_pin,
+    dc=dc_pin,
+    rst=reset_pin,
+    baudrate=BAUDRATE,
 )
 
 # Input pins:
@@ -93,18 +105,18 @@ backlight.value = True
 
 # Create RGB blank image for full color drawing.
 if disp.rotation % 180 == 90:
-	height = disp.width  # swap height/width to rotate it to landscape
-	width = disp.height
+    height = disp.width  # swap height/width to rotate it to landscape
+    width = disp.height
 else:
-	width = disp.width  # swap height/width to rotate it to landscape
-	height = disp.height
+    width = disp.width  # swap height/width to rotate it to landscape
+    height = disp.height
 image = Image.new("RGB", (width, height))
 
 # QR Code Generation
 qr = qrcode.QRCode(
-	version=1,
-	box_size=10,
-	border=4,
+    version=1,
+    box_size=10,
+    border=4,
 )
 qr.add_data('testcode')
 qr.make()
@@ -114,11 +126,11 @@ img_qr = qr.make_image().convert('RGB')
 image_ratio = img_qr.width / img_qr.height
 screen_ratio = width / height
 if screen_ratio < image_ratio:
-	scaled_width = img_qr.width * height // img_qr.height
-	scaled_height = height
+    scaled_width = img_qr.width * height // img_qr.height
+    scaled_height = height
 else:
-	scaled_width = width
-	scaled_height = img_qr.height * width // img_qr.width
+    scaled_width = width
+    scaled_height = img_qr.height * width // img_qr.width
 img_qr = img_qr.resize((scaled_width, scaled_height), Image.BICUBIC)
 
 # Crop and center the image
@@ -142,84 +154,86 @@ font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
 draw = ImageDraw.Draw(image)
 
 while True:
-	# Draw a black filled box to clear the screen.
-	draw.rectangle((0, 0, width, height), outline=0, fill=(0,0,0))
+    # Draw a black filled box to clear the screen.
+    draw.rectangle((0, 0, width, height), outline=0, fill=(0,0,0))
 
-	# if not button_U.value:  # up pressed
-		# doSomething()
-	# else:
-		# doSomethingElse() # up
+    # if not button_U.value:  # up pressed
+        # doSomething()
+    # else:
+        # doSomethingElse() # up
 
-	# if not button_D.value:  # down pressed
-		# doSomething()
-	# else:
-		# doSomethingElse() # down
+    # if not button_D.value:  # down pressed
+        # doSomething()
+    # else:
+        # doSomethingElse() # down
 
-	# if not button_L.value:  # left pressed
-		# doSomething()
-	# else:
-		# doSomethingElse() # left
+    # if not button_L.value:  # left pressed
+        # doSomething()
+    # else:
+        # doSomethingElse() # left
 
-	# if not button_R.value:  # right pressed
-		# doSomething()
-	# else:
-		# doSomethingElse() # right
+    # if not button_R.value:  # right pressed
+        # doSomething()
+    # else:
+        # doSomethingElse() # right
 
-	while not button_C.value:  # center pressed
-		# Show QR Code for Test Address
-		disp.image(img_qr)  # center
+    while not button_C.value:  # center pressed
+        # Show QR Code for Test Address
+        disp.image(img_qr)  # center
 
-	QuitText = ""
-	A_fill = 0
-	if not button_A.value:  # A button pressed
-		A_fill = "#FF0000"
-		QuitText = "Press A and B together to quit."
-		if not button_B.value:  # B button pressed while A is held
-			backlight.value = False
-			quit()
-	draw.ellipse((140, 190, 180, 230), outline="#FFFFFF", fill=A_fill)  # A button
+    QuitText = ""
+    A_fill = 0
+    if not button_A.value:  # A button pressed
+        A_fill = "#FF0000"
+        QuitText = "Hold A and B together to quit."
+        if not button_B.value:  # B button pressed while A is held
+            backlight.value = False
+            quit()
+    draw.ellipse((140, 190, 180, 230), outline="#FFFFFF", fill=A_fill)  # A
 
-	B_fill = 0
-	if not button_B.value:  # B button pressed
-		B_fill = "#FF0000"
-		QuitText = "Press A and B together to quit."
-		if not button_A.value:  # A button pressed while B is held
-			backlight.value = False
-			quit()
-	draw.ellipse((190, 175, 230, 215), outline="#FFFFFF", fill=B_fill)  # B button
+    B_fill = 0
+    if not button_B.value:  # B button pressed
+        B_fill = "#FF0000"
+        QuitText = "Hold A and B together to quit."
+        if not button_A.value:  # A button pressed while B is held
+            backlight.value = False
+            quit()
+    draw.ellipse((190, 175, 230, 215), outline="#FFFFFF", fill=B_fill)  # B
 
-	# System Temp
-	cmd = "cat /sys/class/thermal/thermal_zone0/temp |  awk '{printf \"CPU Temp: %.1f C\", $(NF-0) / 1000}'"  # pylint: disable=line-too-long
-	Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
-	# CPU Load
-	cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
-	CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
-	# Memory Usage
-	cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%s MB  %.2f%%\", $3,$2,$3*100/$2 }'"
-	MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
+    # System Temp
+    cmd = "cat /sys/class/thermal/thermal_zone0/temp | awk '{printf \"CPU \
+          Temp: %.1f C\", $(NF-0) / 1000}'" # pylint: disable=line-too-long
+    Temp = subprocess.check_output(cmd, shell=True).decode("utf-8")
+    # CPU Load
+    cmd = "top -bn1 | grep load | awk '{printf \"CPU Load: %.2f\", $(NF-2)}'"
+    CPU = subprocess.check_output(cmd, shell=True).decode("utf-8")
+    # Memory Usage
+    cmd = "free -m | awk 'NR==2{printf \"Mem: %s/%s MB  %.2f%%\", \
+          $3,$2,$3*100/$2 }'"
+    MemUsage = subprocess.check_output(cmd, shell=True).decode("utf-8")
 
-	# Write text starting at x,y
-	x = 10
-	y = 10
-	# Display IP Address
-	draw.text((x, y), IP, font=font, fill="#FFFFFF")
-	y += font.getsize(IP)[1]
-	# Display CPU Load
-	draw.text((x, y), CPU, font=font, fill="#FFFFFF")
-	y += font.getsize(CPU)[1]
-	# Display Memory Usage
-	draw.text((x, y), MemUsage, font=font, fill="#FFFFFF")
-	y += font.getsize(MemUsage)[1]
-	# Display Disk Usage
-	draw.text((x, y), Disk, font=font, fill="#FFFFFF")
-	y += font.getsize(Disk)[1]
-	# Display System Temp
-	draw.text((x, y), Temp, font=font, fill="#FFFFFF")
-	y += font.getsize(Disk)[1]
-	# Display Quit Text
-	draw.text((x, y), QuitText, font=font, fill="#FF0000")
+    # Write text starting at x,y
+    x = 10
+    y = 10
+    # Display IP Address
+    draw.text((x, y), IP, font=font, fill="#FFFFFF")
+    y += font.getsize(IP)[1]
+    # Display CPU Load
+    draw.text((x, y), CPU, font=font, fill="#FFFFFF")
+    y += font.getsize(CPU)[1]
+    # Display Memory Usage
+    draw.text((x, y), MemUsage, font=font, fill="#FFFFFF")
+    y += font.getsize(MemUsage)[1]
+    # Display Disk Usage
+    draw.text((x, y), Disk, font=font, fill="#FFFFFF")
+    y += font.getsize(Disk)[1]
+    # Display System Temp
+    draw.text((x, y), Temp, font=font, fill="#FFFFFF")
+    y += font.getsize(Disk)[1]
+    # Display Quit Text
+    draw.text((x, y), QuitText, font=font, fill="#FF0000")
 
-	# Display the Image
-	disp.image(image)
+    # Display the Image
+    disp.image(image)
 
-	time.sleep(0.01)
+    time.sleep(0.01)
