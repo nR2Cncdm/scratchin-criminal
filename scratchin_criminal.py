@@ -236,4 +236,4 @@ while True:
     # Display the Image
     disp.image(image)
 
-    time.sleep(0.01)
+    time.sleep(0.05)
