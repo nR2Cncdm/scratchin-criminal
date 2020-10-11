@@ -47,29 +47,40 @@ BAUDRATE = 24000000
 spi = board.SPI()
 
 # Create the display:
-# 0.96" SSD1331
-# disp = ssd1331.SSD1331(spi, rotation=180,
-# 0.96" MiniTFT ST7735R
-# disp = st7735.ST7735R(spi, rotation=90, bgr=True,
-# 1.14" ST7789
-# disp = st7789.ST7789(spi, rotation=90, width=135, height=240, x_offset=53,
+# disp = ssd1331.SSD1331(spi,                   # 0.96" SSD1331
+    # rotation=180,
+# disp = st7735.ST7735R(spi,                    # 0.96" MiniTFT ST7735R
+    # rotation=90,
+    # bgr=True,
+# disp = st7789.ST7789(spi,                     # 1.14" ST7789
+    # rotation=90,
+    # width=135,
+    # height=240,
+    # x_offset=53,
     # y_offset=40,
-# 1.27" SSD1351
-# disp = ssd1351.SSD1351(spi, height=96, y_offset=32, rotation=180,
-# 1.3", 1.54" ST7789
-disp = st7789.ST7789(spi, rotation=180, height=240, y_offset=80,
-# 1.44" ST7735R
-# disp = st7735.ST7735R(spi, rotation=270, height=128, x_offset=2, y_offset=3,
-# 1.5" SSD1351
-# disp = ssd1351.SSD1351(spi, rotation=180,
-# 1.8" ST7735R
-# disp = st7735.ST7735R(spi, rotation=90,
-# 2.0" ST7789
-# disp = st7789.ST7789(spi, rotation=90,
-# 2.2", 2.4", 2.8", 3.2" ILI9341
-# disp = ili9341.ILI9341(spi, rotation=90,
-# 3.5" HX8357
-# disp = hx8357.HX8357(spi, rotation=180,
+# disp = ssd1351.SSD1351(spi,                   # 1.27" SSD1351
+    # height=96,
+    # y_offset=32,
+    # rotation=180,
+disp = st7789.ST7789(spi,                     # 1.3", 1.54" ST7789
+    rotation=180,
+    height=240,
+    y_offset=80,
+# disp = st7735.ST7735R(spi,                    # 1.44" ST7735R
+    # rotation=270,
+    # height=128,
+    # x_offset=2,
+    # y_offset=3,
+# disp = ssd1351.SSD1351(spi,                   # 1.5" SSD1351
+    # rotation=180,
+# disp = st7735.ST7735R(spi,                    # 1.8" ST7735R
+    # rotation=90,
+# disp = st7789.ST7789(spi,                     # 2.0" ST7789
+    # rotation=90,
+# disp = ili9341.ILI9341(spi,                   # 2.2", 2.4", 2.8", 3.2" ILI9341
+    # rotation=90,
+# disp = hx8357.HX8357(spi,                     # 3.5" HX8357
+    # rotation=180,
     cs=cs_pin,
     dc=dc_pin,
     rst=reset_pin,
@@ -104,11 +115,11 @@ backlight.switch_to_output()
 backlight.value = True
 
 # Create RGB blank image for full color drawing.
-if disp.rotation % 180 == 90:
+if disp.rotation % 180 == 90: # if in portrait mode
     height = disp.width  # swap height/width to rotate it to landscape
     width = disp.height
 else:
-    width = disp.width  # swap height/width to rotate it to landscape
+    width = disp.width
     height = disp.height
 image = Image.new("RGB", (width, height))
 
@@ -186,19 +197,44 @@ while True:
     if not button_A.value:  # A button pressed
         A_fill = "#FF0000"
         QuitText = "Hold A and B together to quit."
-        if not button_B.value:  # B button pressed while A is held
-            backlight.value = False
-            quit()
+        
     draw.ellipse((140, 190, 180, 230), outline="#FFFFFF", fill=A_fill)  # A
 
     B_fill = 0
     if not button_B.value:  # B button pressed
         B_fill = "#FF0000"
         QuitText = "Hold A and B together to quit."
-        if not button_A.value:  # A button pressed while B is held
-            backlight.value = False
-            quit()
     draw.ellipse((190, 175, 230, 215), outline="#FFFFFF", fill=B_fill)  # B
+
+    # Quit
+    if not (button_A.value or button_B.value):  # A and B buttons held together
+        # Draw a red filled box as the background
+        draw.rectangle((0, 0, width, height), fill=(204,0,0))
+
+        # Draw a smaller inner darker shade rectangle
+        draw.rectangle((20, 20, width-20, height-20), fill=(102, 0, 0))
+        
+        # Draw Some Text
+        text = "Quitting in 3s"
+        (font_width, font_height) = font.getsize(text)
+        draw.text(
+            (width // 2 - font_width // 2, height // 2 - font_height // 2),
+            text,
+            font=font,
+            fill=(255, 255, 255),
+        )
+
+        # Display the Image
+        disp.image(image)
+
+        # Wait 3 seconds
+        time.sleep(3.0)
+        
+        # Turn off display
+        backlight.value = False
+        
+        # Quit the program
+        quit()
 
     # System Temp
     cmd = "cat /sys/class/thermal/thermal_zone0/temp | awk '{printf \"CPU \
