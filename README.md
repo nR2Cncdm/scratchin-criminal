@@ -1,1 +1,1 @@
-# Zero&deg; Wallet
+# 0&deg; Wallet
